@@ -26,8 +26,7 @@ namespace SimpleUnityCheatConsole
         public MethodInfo MethodInfo { get; }
         public ParameterInfo[] Parameters { get; }
 
-        public MethodInfoCheatCommand(string commandName, string description, MethodInfo methodInfo) : base(commandName,
-            description)
+        public MethodInfoCheatCommand(string commandName, string description, MethodInfo methodInfo) : base(commandName, description)
         {
             MethodInfo = methodInfo;
             Parameters = MethodInfo.GetParameters();
@@ -45,8 +44,7 @@ namespace SimpleUnityCheatConsole
     {
         private readonly Action _action;
 
-        public ZeroParameterCheatCommand(string commandName, string description, Action action) : base(commandName,
-            description)
+        public ZeroParameterCheatCommand(string commandName, string description, Action action) : base(commandName, description)
         {
             _action = action;
         }

@@ -1,13 +1,12 @@
 using System;
-using JetBrains.Annotations;
 
 namespace SimpleUnityCheatConsole
 {
     [AttributeUsage(AttributeTargets.Method)]
     public class CheatCommandAttribute : Attribute
     {
-        [CanBeNull] public string CommandName { get; private set; }
-        [CanBeNull] public string Description { get; private set; }
+        public string CommandName { get; private set; }
+        public string Description { get; private set; }
 
         public CheatCommandAttribute()
         {

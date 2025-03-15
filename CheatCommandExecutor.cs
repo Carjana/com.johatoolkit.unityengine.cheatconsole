@@ -8,18 +8,18 @@ using UnityEngine;
 
 namespace SimpleUnityCheatConsole
 {
-    public class CheatCommandExecutor
+    public static class CheatCommandExecutor
     {
-        private readonly ReflectionHelper _reflectionHelper = new();
-        public Dictionary<string, BaseCheatCommand> CheatCommands { get; } = new();
+        private static readonly ReflectionHelper ReflectionHelper = new();
+        public static Dictionary<string, BaseCheatCommand> CheatCommands { get; } = new();
 
-        public CheatCommandExecutor()
+        static CheatCommandExecutor()
         {
             CheatCommands.Add("help", new ZeroParameterCheatCommand("help", "Print All possible Commands", PrintHelp));
             GenerateCheatCommandsList();
         }
 
-        private void PrintHelp()
+        private static void PrintHelp()
         {
             foreach (BaseCheatCommand cheatCommand in CheatCommands.Values)
             {
@@ -37,19 +37,18 @@ namespace SimpleUnityCheatConsole
 
                 stringBuilder.Append($" - {cheatCommand.Description ?? "<Missing Description>"}");
 
-                Debug.Log(stringBuilder.ToString());
+                DebugConsole.Instance.AddLog(stringBuilder.ToString(), Color.grey);
             }
         }
 
-        private void GenerateCheatCommandsList()
+        private static void GenerateCheatCommandsList()
         {
-            (MethodInfo, CheatCommandAttribute)[] methodInfos = _reflectionHelper.GetMethodInfos();
+            (MethodInfo, CheatCommandAttribute)[] methodInfos = ReflectionHelper.GetMethodInfos();
             foreach ((MethodInfo, CheatCommandAttribute) reflectionInfo in methodInfos)
             {
                 if (!reflectionInfo.Item1.IsStatic)
                 {
-                    Debug.LogWarning(
-                        $"CheatMethod {reflectionInfo.Item1.DeclaringType}.{reflectionInfo.Item1.Name} must be static!");
+                    Debug.LogWarning($"CheatMethod {reflectionInfo.Item1.DeclaringType}.{reflectionInfo.Item1.Name} must be static!");
                     continue;
                 }
 
@@ -58,8 +57,7 @@ namespace SimpleUnityCheatConsole
 
                 if (CheatCommands.ContainsKey(cheatCommand.CommandName))
                 {
-                    Debug.LogWarning(
-                        $"{cheatCommand.CommandName} already exists in the cheat commands list! Check the command names! ({cheatCommand.MethodInfo.DeclaringType}.{cheatCommand.MethodInfo.Name})");
+                    Debug.LogWarning($"{cheatCommand.CommandName} already exists in the cheat commands list! Check the command names! ({cheatCommand.MethodInfo.DeclaringType}.{cheatCommand.MethodInfo.Name})");
                     return;
                 }
 
@@ -67,9 +65,9 @@ namespace SimpleUnityCheatConsole
             }
         }
 
-        public bool IsValidCommandName(string commandName) => CheatCommands.ContainsKey(commandName);
+        public static bool IsValidCommandName(string commandName) => CheatCommands.ContainsKey(commandName);
 
-        public bool IsValidCommand(string command)
+        public static bool IsValidCommand(string command)
         {
             string[] commandParts = command.Split(' ').Where(part => part.Trim() != "").ToArray();
             if (commandParts.Length == 0)
@@ -86,7 +84,7 @@ namespace SimpleUnityCheatConsole
             return IsValidCommandParams(commandParts.Skip(1).ToArray(), parameterTypes);
         }
 
-        private bool IsValidCommandParams(string[] parameters, Type[] parameterTypes)
+        private static bool IsValidCommandParams(string[] parameters, Type[] parameterTypes)
         {
             if (parameters.Length != parameterTypes.Length)
                 return false;
@@ -101,29 +99,39 @@ namespace SimpleUnityCheatConsole
             return true;
         }
 
-        public void Execute(string command)
+        public static void Execute(string command)
         {
             if (!IsValidCommand(command))
             {
-                Debug.LogWarning($"Invalid Command! {command} (Check Params)");
+                DebugConsole.Instance.AddLog($"Invalid Command! {command} (Check Params)", Color.yellow);
                 return;
             }
 
             string[] commandParts = command.Split(' ').Where(part => part.Trim() != "").ToArray();
 
             BaseCheatCommand baseCheatCommand = CheatCommands.GetValueOrDefault(commandParts.First());
+            try
+            {
 
-            if (baseCheatCommand is MethodInfoCheatCommand methodInfoCheatCommand)
-            {
-                ExecuteCheatCommand(commandParts, methodInfoCheatCommand);
+                if (baseCheatCommand is MethodInfoCheatCommand methodInfoCheatCommand)
+                {
+                    ExecuteCheatCommand(commandParts, methodInfoCheatCommand);
+                }
+                else
+                {
+                    baseCheatCommand.Execute();
+                }
+
+                DebugConsole.Instance.AddLog($"Executed Command \"{command}\" Successfully!", Color.green);
             }
-            else
+            catch (Exception e)
             {
-                baseCheatCommand.Execute();
+                DebugConsole.Instance.AddLog($"Failed to execute Command {baseCheatCommand.CommandName} \n{e}", Color.red);
+                return;
             }
         }
 
-        private void ExecuteCheatCommand(string[] commandParts, MethodInfoCheatCommand methodInfoCheatCommand)
+        private static void ExecuteCheatCommand(string[] commandParts, MethodInfoCheatCommand methodInfoCheatCommand)
         {
             string[] inputParameters = commandParts.Skip(1).ToArray();
 
@@ -141,18 +149,16 @@ namespace SimpleUnityCheatConsole
             methodInfoCheatCommand.Execute(null, parameters);
         }
 
-        private string GetParameterTypeName(Type parameterType) =>
-            parameterType == typeof(float) ? "float" : parameterType.Name;
+        private static string GetParameterTypeName(Type parameterType) => parameterType == typeof(float) ? "float" : parameterType.Name;
 
-        public BaseCheatCommand[] GetPossibleCommands(string command)
+        public static BaseCheatCommand[] GetPossibleCommands(string command)
         {
             string[] commandParts = command.Split(' ').Where(part => part.Trim() != "").ToArray();
 
             if (commandParts.Length == 0)
                 return CheatCommands.Values.ToArray();
 
-            BaseCheatCommand[] possibleCommandsByName = CheatCommands.Values
-                .Where(cheatCommand => cheatCommand.CommandName.StartsWith(commandParts.First())).ToArray();
+            BaseCheatCommand[] possibleCommandsByName = CheatCommands.Values.Where(cheatCommand => cheatCommand.CommandName.StartsWith(commandParts.First())).ToArray();
             return possibleCommandsByName;
         }
     }
