@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 using System.Reflection;
-using JetBrains.Annotations;
 
 namespace SimpleUnityCheatConsole
 {
@@ -9,8 +8,8 @@ namespace SimpleUnityCheatConsole
     {
         public string CommandName { get; set; }
         public string Description { get; set; }
-        [CanBeNull] public Type[] ParameterTypes { get; protected set; }
-        [CanBeNull] public string[] ParameterNames { get; protected set; }
+        public Type[] ParameterTypes { get; protected set; }
+        public string[] ParameterNames { get; protected set; }
 
         protected BaseCheatCommand(string commandName, string description)
         {
