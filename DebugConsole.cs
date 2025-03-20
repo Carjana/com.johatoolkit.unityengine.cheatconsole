@@ -1,6 +1,6 @@
 using System;
 using System.Text;
-using CircularLinkedList;
+using JohaToolkit.Unity.DataStructures.Lists.CircularLinkedList;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
