@@ -1,0 +1,14 @@
+{
+  "name": "com.johatoolkit.unityengine.cheatconsole",
+  "version": "1.0.0",
+  "displayName": "JohaToolkit.UnityEngine.Cheatconsole",
+  "description": "This is a simple cheatconsole.\n\nIs dependent on:\nhttps://github.com/Carjana/com.johatoolkit.unityengine.git",
+  "author": {
+    "name": "Joshua"
+  },
+  "unity": "6000.0",
+  "dependencies": {
+    "com.johatoolkit.unityengine": "1.0.0",
+    "com.unity.inputsystem": "1.13.1"
+  }
+}

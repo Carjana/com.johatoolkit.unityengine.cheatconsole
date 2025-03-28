@@ -1,0 +1,17 @@
+{
+    "name": "johatoolkit.unityengine.cheatconsole",
+    "rootNamespace": "JoHaToolkit.UnityEngine.CheatConsole",
+    "references": [
+        "GUID:0718c5cd66578f045926570343355acd",
+        "GUID:75469ad4d38634e559750d17036d5f7c"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using System.Reflection;
 
-namespace SimpleUnityCheatConsole
+namespace JoHaToolkit.UnityEngine.CheatConsole
 {
     public abstract class BaseCheatCommand
     {

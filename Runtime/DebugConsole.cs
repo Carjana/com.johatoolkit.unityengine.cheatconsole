@@ -1,10 +1,10 @@
 using System;
 using System.Text;
-using JohaToolkit.Unity.DataStructures.Lists.CircularLinkedList;
+using JohaToolkit.UnityEngine.DataStructures.Lists.CircularLinkedList;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-namespace SimpleUnityCheatConsole
+namespace JoHaToolkit.UnityEngine.CheatConsole
 {
     public class DebugConsole : MonoBehaviour
     {
