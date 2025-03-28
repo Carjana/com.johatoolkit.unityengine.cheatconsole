@@ -13,10 +13,10 @@ namespace JoHaToolkit.UnityEngine.CheatConsole
         private static readonly ReflectionHelper ReflectionHelper = new();
         public static Dictionary<string, BaseCheatCommand> CheatCommands { get; } = new();
 
-        static CheatCommandExecutor()
+        public static void Init(string[] assembliesToSearch, bool searchAllAssemblies = false)
         {
             CheatCommands.Add("help", new ZeroParameterCheatCommand("help", "Print All possible Commands", PrintHelp));
-            GenerateCheatCommandsList();
+            GenerateCheatCommandsList(assembliesToSearch, searchAllAssemblies);
         }
 
         private static void PrintHelp()
@@ -41,9 +41,9 @@ namespace JoHaToolkit.UnityEngine.CheatConsole
             }
         }
 
-        private static void GenerateCheatCommandsList()
+        private static void GenerateCheatCommandsList(string[] assembliesToSearch, bool searchAllAssemblies = false)
         {
-            (MethodInfo, CheatCommandAttribute)[] methodInfos = ReflectionHelper.GetMethodInfos();
+            (MethodInfo, CheatCommandAttribute)[] methodInfos = ReflectionHelper.GetMethodInfos(assembliesToSearch, searchAllAssemblies);
             foreach ((MethodInfo, CheatCommandAttribute) reflectionInfo in methodInfos)
             {
                 if (!reflectionInfo.Item1.IsStatic)

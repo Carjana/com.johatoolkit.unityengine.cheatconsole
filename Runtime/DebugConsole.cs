@@ -38,6 +38,12 @@ namespace JoHaToolkit.UnityEngine.CheatConsole
         [SerializeField] private bool catchConsoleLogs;
         [SerializeField] private int maxLogs;
 
+        [Header("Assembly Names: Optional. standard is \"Assembly-CSharp\"")]
+        [SerializeField] private string[] assemblyNames = new []{"Assembly-CSharp"};
+
+        [Header("Not recommended! Can cause performance issues")]
+        [SerializeField] private bool searchAllAssemblies = false;
+
         private const int TextInputFieldSpacing = 20;
         private const int TopSpacing = 30;
         private const int TextInputFieldHeight = 30;
@@ -80,6 +86,8 @@ namespace JoHaToolkit.UnityEngine.CheatConsole
                 DontDestroyOnLoad(this);
                 Instance = this;
             }
+            
+            CheatCommandExecutor.Init(assemblyNames, searchAllAssemblies);
             
             _logs = new CircularLinkedList<LogMessage>(maxLogs);
             _possibleCommands = Array.Empty<BaseCheatCommand>();

@@ -7,31 +7,37 @@ namespace JoHaToolkit.UnityEngine.CheatConsole
 {
     public class ReflectionHelper
     {
-        public (MethodInfo, CheatCommandAttribute)[] GetMethodInfos()
+        public (MethodInfo, CheatCommandAttribute)[] GetMethodInfos(string[] assembliesToSearch, bool searchAllAssemblies = false)
         {
             List<(MethodInfo, CheatCommandAttribute)> methodInfos = new();
+            Assembly[] assemblies = searchAllAssemblies? AppDomain.CurrentDomain.GetAssemblies() : AppDomain.CurrentDomain.GetAssemblies().Where(a => IsAssemblie(a.FullName, assembliesToSearch)).ToArray();
 
-            Assembly assembly = Assembly.GetExecutingAssembly();
-            Type[] types = assembly.GetTypes();
-
-            foreach (Type type in types)
+            foreach (Assembly assembly in assemblies)
             {
-                BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance |
-                                     BindingFlags.Static;
-                foreach (MethodInfo methodInfo in type.GetMethods(flags))
+                Type[] types = assembly.GetTypes();
+                foreach (Type type in types)
                 {
-                    if (methodInfo.CustomAttributes.ToArray().Length <= 0)
-                        continue;
+                    BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static;
+                    foreach (MethodInfo methodInfo in type.GetMethods(flags))
+                    {
+                        if (methodInfo.CustomAttributes.ToArray().Length <= 0)
+                            continue;
 
-                    CheatCommandAttribute attribute = methodInfo.GetCustomAttribute<CheatCommandAttribute>();
-                    if (attribute == null)
-                        continue;
-                    methodInfos.Add((methodInfo, attribute));
+                        CheatCommandAttribute attribute = methodInfo.GetCustomAttribute<CheatCommandAttribute>();
+                        if (attribute == null)
+                            continue;
+                        methodInfos.Add((methodInfo, attribute));
+                    }
                 }
             }
 
             return methodInfos.ToArray();
         }
+        private bool IsAssemblie(string assemblyName, string[] assembliesToSearch)
+        {
+            return assembliesToSearch.Any(assemblyName.StartsWith);
+        }
     }
+    
 
 }
