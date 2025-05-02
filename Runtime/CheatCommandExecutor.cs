@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -140,10 +141,11 @@ namespace JoHaToolkit.UnityEngine.CheatConsole
             for (int index = 0; index < inputParameters.Length; index++)
             {
                 Type parameterType = methodInfoCheatCommand.ParameterTypes[index];
-
+                
                 TypeConverter typeConverter = TypeDescriptor.GetConverter(parameterType);
 
-                parameters[index] = typeConverter.ConvertFromString(inputParameters[index]);
+                parameters[index] = typeConverter.ConvertFromInvariantString(inputParameters[index]);
+
             }
 
             methodInfoCheatCommand.Execute(null, parameters);
