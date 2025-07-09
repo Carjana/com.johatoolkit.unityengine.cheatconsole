@@ -3,6 +3,7 @@ using System.Text;
 using JohaToolkit.UnityEngine.DataStructures.Lists.CircularLinkedList;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.Controls;
 
 namespace JoHaToolkit.UnityEngine.CheatConsole
 {
@@ -154,7 +155,15 @@ namespace JoHaToolkit.UnityEngine.CheatConsole
             });
         }
 
-        private void ToggleConsole() => _isConsoleShown = !_isConsoleShown;
+        private void ToggleConsole()
+        {
+            _isConsoleShown = !_isConsoleShown;
+            string displayName = toggleConsoleInputAction.action.activeControl.displayName;
+            if(_userInput.Length > 0 && _userInput.EndsWith(displayName))
+            {
+                _userInput = _userInput.Remove(_userInput.Length - displayName.Length, displayName.Length);
+            }
+        }
 
         private void OnGUI()
         {
@@ -179,7 +188,9 @@ namespace JoHaToolkit.UnityEngine.CheatConsole
             bool validCommand = CheatCommandExecutor.IsValidCommand(_userInput);
             using (new ChangeGUIColor(validCommand ? Color.white : Color.red))
             {
+                GUI.SetNextControlName("InputField");
                 _userInput = GUI.TextField(_inputRect, _userInput);
+                GUI.FocusControl("InputField");
             }
         }
 
@@ -248,7 +259,14 @@ namespace JoHaToolkit.UnityEngine.CheatConsole
                             stringBuilder.Append(", ");
                     }
 
-                GUI.TextArea(new Rect(0, _suggestionsContentRect.height - SuggestionHeight * (i + 1), _suggestionsContentRect.width, SuggestionHeight), stringBuilder.ToString());
+                float buttonWidth = _suggestionsContentRect.width / 7;
+                float textAreaWidth = _suggestionsContentRect.width - buttonWidth;
+                
+                GUI.TextArea(new Rect(buttonWidth, _suggestionsContentRect.height - SuggestionHeight * (i + 1), textAreaWidth, SuggestionHeight), stringBuilder.ToString());
+                if (GUI.Button(new Rect(0, _suggestionsContentRect.height - SuggestionHeight * (i + 1), buttonWidth, SuggestionHeight), "select"))
+                {
+                    _userInput = baseCheatCommand.CommandName;
+                }
             }
 
             GUI.EndScrollView();
